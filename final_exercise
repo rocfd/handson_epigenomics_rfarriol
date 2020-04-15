@@ -1,0 +1,120 @@
+1. Git link
+https://github.com/rocfd/git_handson
+
+2. Docker Hub
+Image "tidyr"
+
+
+3. Describe the workflow of a ChIP-seq experiment (experimental part)
+The purpose of ChIP-seq experiments is to identify all the genomic locations associated to a 
+transcription factor or a histone modification. As a summary, this technique uses antibodies
+to detect a target protein bound to DNA and then isolates this DNA in order to sequence it.
+The steps are the following: first, formaldehyide is used to covalently fix all DNA associated
+proteins to DNA. Second, DNA surrounding proteins is cut to small fragments of 300bps. The protein
+of interest and its corresponding DNA is purified using specific antibodies. Then, a second antibody
+is used to capture those fragments bound to the specific antibody and the rest is discarded. 
+At this stage, proteins are separated from DNA reversing the effects of formaldehyde using temperature.
+This leads to a sample of DNA fragments that in the case of ChIP-SEQ will be resolved by sequencing.
+
+4. Controls in ChIP-SEQ experiments
+ChIP-seq experiments require controls to ensure an appropriate identification of enrichment signals. 
+The main motifs that stress the need of control samples are to avoid false enrichment of open chromatin regions and 
+platform-specific sequencing biases. The first can occur due to an heterogeneous DNA breakage during sonication, hence
+open chromatinr regions are enriched in sonication samples compared to heterochromatic regions, which more tighlty packed,
+result less accessible for shearing and become underrepresented. The second, the specific effects of the sequencing 
+platform used have to be controlled. To this end, two possible types of control samples are available. One is "input DNA" 
+is DNA from the same sample, which undergoes cross-linking and fragmentation but it is not immunopurified. A second option
+is to use a mock antibody that targets a non-nuclear antigen. 
+
+5. Explain at which stage of a ChIP-seq processing analysis and how we combine the information of ChIP and control reads.
+Describe the output files we get if we are using the tool MACS2.
+
+The ChIP sample and control sample reads are obtained via sequencing. Continously, in parallel the samples and the controls are 
+mapped to the genome obtaining BAM files. These BAM files are then used to perform peak calling, the step where control
+information will be compared to the ChIP sample in order to identify genome positions where the histone mark / transcription
+factor is bound and enriched in the sample respect to teh control. The output files obtained using MACS2 are the following:
+- Wiggle files or bigWig files (compressed version).
+- BED files or bigBed files (compressed version).
+
+The .bed files must contain three compulsory elements that are chromosome name, start position and end position. In the case of
+peak caller outputs, the start and end positions refer to the limits of the peak. Besides, with MACS2 additional elements are
+obtained such as a peak identifier, an integer for UCSC display and the relative position to peak start (relative summit). 
+To provide statisticall meaning bed files also include fold-change values at peak summit, -log10p-values and -log10qvalues.
+Finally, the strand info is included in the form of NA since in ChIP-seq experiments the strand cannot be determined.
+
+The .wiggle files contain information at nucleotide-level regarding continous signals on pile-up signal (aligned reads after
+shifting or read extension), fold-enrichment signal and p-value signal.
+
+6. A pipeline is a workflow of ordered steps dedicated to solve a task.
+In the case of ENCODE ChIP-seq includes the CHIP-seq experiment itself, the sequencing and corresponding obtention of FASTQ 
+files. Then these are mapped to the reference genome leading to the obtention of BAM files. Controls wether they are from 
+input origin or from a control IgG are also sequenced and mapped for them to be compared and confirm the marks in the sample.
+Once mapped, the final step is peak calling. The peak calling consists on registering the genomic positions were the peaks are located (in bed or big bed files). Additionally, the fold-change signal is stored in wiggle files or bigWig files. 
+Peak calling will be adapted wether the target are transcription factors (using SPP caller) or histone marks (using MACS2).
+
+7. EN-TEx donor:
+Filters:
+Assay type: Undefined (all)
+Assay title: Undefined (all)
+Status: released.
+Genome assembly: GRCh38.
+Target category: unspecified.
+Target of assay: unspecified.
+Organism: Homo sapiens
+Biosample classification: tissue
+Biosample term name: stomach & sigmoid colon
+All the remaing filters are default/unspecified.
+
+b) 39 experiments fullfill the above filters.
+c) https://www.encodeproject.org/metadata/?type=Experiment&replicates.library.biosample.donor.uuid=d370683e-81e7-473f-8475-7716d027849b&status=released&assembly=GRCh38&biosample_ontology.term_name=stomach&biosample_ontology.term_name=sigmoid+colon
+
+8. Download the metadata retrieved in point 5. Parse it to get:
+● File ID of bigWig file for fold-change over control in sigmoid_colon ATAC-seq
+experiment.
+● File ID of bigWig file for fold-change over control in stomach ATAC-seq experiment.
+● Paste the code used and the corresponding IDs.
+
+Sigmoid Colon
+ENCFF997HHO
+
+grep -F H3K4me3 metadata.tsv |\
+awk 'BEGIN{FS=OFS="\t"; print "file_id\ttissue\ttarget" } $2=="bigWig" && $3=="fold_change_over_control" && $44!="GRCh38" {print $1, $7, $19}' > bigWig.FC.ids.txt
+
+wget -P bigWig.files "https://www.encodeproject.org/files/ENCFF997HHO/@@download/ENCFF997HHO.bigWig"
+
+Stomach
+ENCFF415RKU
+
+grep -F H3K4me3 metadata.tsv |\
+awk 'BEGIN{FS=OFS="\t"; print "file_id\ttissue\ttarget" } $2=="bigWig" && $3=="fold_change_over_control" && $44!="GRCh38" {print $1, $7, $19}' > bigWig.FC.ids.txt
+
+wget -P bigWig.files "https://www.encodeproject.org/files/ENCFF415RKU/@@download/ENCFF415RKU.bigWig"
+
+9. What is an aggregation plot?
+● Which tool do we use to generate one? aggreagration.plot.R
+● Which input data do we need? A .tsv
+● Have a look at the aggregation plot done during the hands-on.
+○ Are the plots consistent between the two tissues?
+○ Is this what you would expect, given the relationship between H3K4me3 and
+gene expression?
+○ Why is it important to know the approximate location of a specific histone
+mark with respect to the gene?
+The function of histone marks depend on their relative position with respect to the gene, so the same mark can have
+different functions depending on where it is located.
+
+10. What type of plot are we using to visualize the correlation between two variables?
+● Have a look at the plots generated during the hands-on to assess the correlation
+between expression and H3K4me3
+○ Are these results consistent between the two tissues?
+○ Would you expect this degree of correlation? Formulate an interpretation of
+the results.
+
+The plot to visualize the correlation is a scatter plot with H3K4me3 signal as Y axis and expression as X axis.
+
+The correlation coefficients seem equiparable between tissues being for sigmoid colon Spearman 0.74 and Pearson 0.51
+and for stomach Spearman 0.67 and 0.47. Hence, the results are consistent between tissues.
+
+The histone mark H3K4me3 is related with active gene transcription. This mark is present around the TSS and tipically, its signal
+adopts a narrow peak shape. Taking this information into account, a positive correlation between the presence of this mark and
+gene expression should be expected. The present results indicate this positive correlation. However, a greater correlation
+could be expected according to the strong link between the presence of this histone mark and active transcription. 
