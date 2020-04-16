@@ -3,6 +3,7 @@ https://github.com/rocfd/git_handson
 
 2. Docker Hub
 Image "tidyr:latest"
+tidyR package is dedicated to the manipulation and tidying of data.
 https://hub.docker.com/layers/rocfadu95/epigenomics_uvic/latest/images/sha256-3977f935e9fc24a4a3b73b26d56322a71bf19dc5c2be315407a12a9a2acdc2c1?context=repo
 
 3. Describe the workflow of a ChIP-seq experiment (experimental part)
