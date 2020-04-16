@@ -2,8 +2,8 @@
 https://github.com/rocfd/git_handson
 
 2. Docker Hub
-Image "tidyr"
-
+Image "tidyr:latest"
+https://hub.docker.com/layers/rocfadu95/epigenomics_uvic/latest/images/sha256-3977f935e9fc24a4a3b73b26d56322a71bf19dc5c2be315407a12a9a2acdc2c1?context=repo
 
 3. Describe the workflow of a ChIP-seq experiment (experimental part)
 The purpose of ChIP-seq experiments is to identify all the genomic locations associated to a 
@@ -91,16 +91,25 @@ awk 'BEGIN{FS=OFS="\t"; print "file_id\ttissue\ttarget" } $2=="bigWig" && $3=="f
 wget -P bigWig.files "https://www.encodeproject.org/files/ENCFF415RKU/@@download/ENCFF415RKU.bigWig"
 
 9. What is an aggregation plot?
+An aggregation plot is a representation of the distribution of a continous ChIP-seq signal (fold-change, p-value or pile-up)
+over a determinate set of genomic coordinates.
 ● Which tool do we use to generate one? aggreagration.plot.R
-● Which input data do we need? A .tsv
+● Which input data do we need? An aggreation plot takes the genomic coordinates from a .BED file and the ChIP-seq signal
+targeted concatenated with the genomic positions of interest (provided in a .tsv file).
 ● Have a look at the aggregation plot done during the hands-on.
 ○ Are the plots consistent between the two tissues?
+Both tissues show a bimodal distribution centered at the TSS, which is expectable due to the preference of H3K4me3 to locate
+near the promoter and first exon. Hence, the results are consistent across the analyzed tissues.
 ○ Is this what you would expect, given the relationship between H3K4me3 and
 gene expression?
+H3K4 tri-methylation has been associated with active gene transcription. In this line, the results indicate clearly how
+the 1000 most expressed genes present a higher fold-change ChIP-seq signal than the least expressed genes. These results
+confirm the association between H3K4me3 and gene expression in stomach and sigmoid colon.
 ○ Why is it important to know the approximate location of a specific histone
 mark with respect to the gene?
 The function of histone marks depend on their relative position with respect to the gene, so the same mark can have
-different functions depending on where it is located.
+different functions depending on where it is located. In order to determine the role of a histone mark it is therefore
+necessary not only to detect it but to annotate its relative position to circundant genomic elements.
 
 10. What type of plot are we using to visualize the correlation between two variables?
 ● Have a look at the plots generated during the hands-on to assess the correlation
@@ -117,4 +126,38 @@ and for stomach Spearman 0.67 and 0.47. Hence, the results are consistent betwee
 The histone mark H3K4me3 is related with active gene transcription. This mark is present around the TSS and tipically, its signal
 adopts a narrow peak shape. Taking this information into account, a positive correlation between the presence of this mark and
 gene expression should be expected. The present results indicate this positive correlation. However, a greater correlation
-could be expected according to the strong link between the presence of this histone mark and active transcription. 
+could be expected according to the strong link between the presence of this histone mark and active transcription in the literature.
+
+
+11. During the hands-on session, we have checked the level of expression of genes with tissue-specific H3K4me3 marking.
+● Are these results consistent with the degree of correlation we have observed in point 8?
+● Do you observe any unexpected behavior?
+● How would you relate the presence of genes with tissue-specific marking with the GO
+terms obtained?
+
+The expected trend to observe is that marked tissues show higher expression levels than unmarked tissues. This can be 
+observed comparing the boxplots marked both tissues vs not marked. Clearly, marked tissues show greater expression levels.
+It is also the case for tissue-specific marks where the target tissue shows a greater expression level than the counterpart.
+
+The detection of expression on non-methylated instances (outliers) is rather unexpected since non-methylated H3K4 is associated with
+silent transcription. However, the final transcription activity is susceptible to the added influence of many histone marks
+and transcription factors that may make the absence of methylation in H3K4 not a crucial factor but rather an element that
+favours silencing.
+
+The GO terms obtained for sigmoid colon specifically marked genes are keratinization (GO:0031424), antimicrobial humoral response
+(GO:0019730), detection of stimulus (GO:0051606), serotonin receptor signaling pathway (GO:0007210) and detection of external stimulus
+(GO:0009581). Tissue-specific marks are related with tissue-specific expression of certain genes. These genes when enriched should
+provide GO terms of specific BPs ocurring in the tissue. However, in our case the sigmoid colon GO terms the presence of keratinization
+does not seem a colon-related process. Detection of external stimulus and simulus can be dedicated to the sensing that enterocytes
+perform of the lumenal cavity. Finally, the activation of the serotonin receptor signaling pathway is related to the presence
+of enterochromafiffin cells, which are the predominant site of serotonin syntesis (DOI: 10.1007/s10350-006-0763-3). 
+
+12. Comment on the Venn diagram generated in the last task.
+Generally, there are more peaks of the same type shared between different tissues than peaks of different type shared in the same tissue.
+In the case of H3K4me3, the peaks shared between tissues add up to 14889. In the case of POLR2A, 5872 peaks are shared between tissues
+Differently for stomach, the H3K4me3 and POLR2A peaks represent the lesser 6332 and for sigmoid colon the intersection is 9120. 
+Although stomach and sigmoid colon are different tissues the expression of common genes can be accounted as the high amount of
+ovelapping H3K4me3 positions. In the same line, POLR2A is a gene that codifies for the DNA-directed RNA polimerase II subunit RPB1,
+which as the largest subunit of RNA pol II is in charge of mRNA sequencing. At an initial stage of transcription, when the polimerase
+machinery is assembled around the TSS colocalization between POLR2A and H3K4me3 is reasonable and might explain the shared peaks
+between this TF and H3K4me3.
